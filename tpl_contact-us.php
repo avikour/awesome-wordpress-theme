@@ -1,3 +1,4 @@
+<?php /* Template Name: Contact Us Template */ ?>
 <?php get_header(); ?>
 
 	<!-- +++++ Welcome Section +++++ -->
@@ -23,18 +24,13 @@
 			</div><!-- /row -->
 	    </div> <!-- /container -->
 	</div><!-- /ww -->
-	
-	
-	<!-- +++++ Information Section +++++ -->
-	
-	<div class="container pt">
+
+	<!-- +++++ Projects Section +++++ -->
 <?php 
-		if ( is_active_sidebar( 'sidebar-information' ) ) : ?>
-				<?php dynamic_sidebar( 'sidebar-information' ); ?>
-				<?php endif;
+    get_sidebar();
 ?>
-	</div><!-- /container -->
-	
+
+	<!-- +++++ Footer Section +++++ -->
 <?php 
     get_footer();
 ?>

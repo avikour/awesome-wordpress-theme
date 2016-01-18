@@ -60,14 +60,25 @@ anytime query_posts is used, it overrides $wp_query global hence it is not advic
 			) 
   		);
 		
-	  register_sidebar( array(
+	    register_sidebar( array(
 	  'name' => __( 'Footer Sidebar', 'awesome' ),
 	  'id' => 'sidebar-footer',
 	  'description' => __( 'This sidebar is for footer on the home page' ),
 	  'before_widget' => '<li id="%1$s" class="widget %2$s">',
 	  'after_widget'  => '</li>',
-	  'before_title'  => '<h2 class="widgettitle">',
-	  'after_title'   => '</h2>',
+	  'before_title'  => '<h3 class="widgettitle">',
+	  'after_title'   => '</h3>',
+			) 
+		);
+		
+		register_sidebar( array(
+	  'name' => __( 'Information Sidebar', 'awesome' ),
+	  'id' => 'sidebar-information',
+	  'description' => __( 'This sidebar is for information displayed on Posts' ),
+	  'before_widget' => '<li id="%1$s" class="widget %2$s">',
+	  'after_widget'  => '</li>',
+	  'before_title'  => '<h4 class="widgettitle">',
+	  'after_title'   => '</h4>',
 			) 
 		);
 	}
@@ -123,7 +134,8 @@ anytime query_posts is used, it overrides $wp_query global hence it is not advic
 				'singular_name' => _x( 'Team' , 'taxonomy singular name'  )
 			  ),  
 			'rewrite' => array( 'slug' => 'Team' ),
-			'hierarchical' => true
+			'hierarchical' => true,
+			'supports' => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'custom-fields', 'comments' )
 			)
 		 );
    }
@@ -133,7 +145,7 @@ anytime query_posts is used, it overrides $wp_query global hence it is not advic
 	function awesome_add_meta_boxes() {
 		add_meta_box(
 			'player_info_id', // ID 
-			__('Add Player Info', 'awesome'), // Title
+			__('Add Player Details', 'awesome'), // Title
 			'player_info', // callback function
 			'players', // post - type (default/custom)
 			'normal', // context
@@ -233,4 +245,17 @@ anytime query_posts is used, it overrides $wp_query global hence it is not advic
 	}
 	add_action('save_post','save_player_info');
 
+	add_filter( 'template_include', 'contact_page_tpl', 99 );
+
+	function contact_page_tpl( $priority ) {
+
+	if ( is_page( 'Contact Us' )  ) {
+		$new_priority = locate_template( array( 'tpl_contact-us.php' ) );
+		if ( '' != $new_priority ) {
+			return $new_priority ;
+		}
+	}
+
+	return $priority;
+}
 ?>

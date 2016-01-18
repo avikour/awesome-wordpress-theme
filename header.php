@@ -51,8 +51,8 @@
 				);
 
 				wp_nav_menu( $defaults );
-                do_action('menu_displayed');
-                echo apply_filters('afer_menu_tagline', 'Today is my Birthday!');
+                //do_action('menu_displayed');
+                //echo apply_filters('afer_menu_tagline', 'Today is my Birthday!');
                 
 		  ?>
 
