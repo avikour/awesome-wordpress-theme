@@ -121,6 +121,8 @@ anytime query_posts is used, it overrides $wp_query global hence it is not advic
 			  ),
 			  'public' => true,
 			  'has_archive' => true,
+			  'supports' => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'custom-fields',
+								  'comments' )
 			)
 		);
 		
@@ -135,9 +137,38 @@ anytime query_posts is used, it overrides $wp_query global hence it is not advic
 			  ),  
 			'rewrite' => array( 'slug' => 'Team' ),
 			'hierarchical' => true,
-			'supports' => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'custom-fields', 'comments' )
 			)
 		 );
+		
+		register_post_type( 
+			'portfolios',
+			array(
+			  'labels' => array(
+				'name' => __( 'Portfolios' ),
+				'singular_name' => __( 'Portfolio' )
+			  ),
+			  'public' => true,
+			  'has_archive' => true,
+			  'supports' => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'custom-fields', 'comments' )
+			)
+		);
+		
+		register_taxonomy( 
+			'service',
+		  'portfolios',
+		  array(
+			'label' => __( 'Services', 'taxonomy general name' ),
+			'labels' => array(
+				'name' => _x( 'Services', 'taxonomy general name'  ),
+				'singular_name' => _x( 'Service' , 'taxonomy singular name'  )
+			  ),  
+			'rewrite' => array( 'slug' => 'Service' ),
+			'hierarchical' => true,
+			)
+		 );
+		
+		
+		
    }
 
 	add_action('add_meta_boxes', 'awesome_add_meta_boxes');
@@ -151,6 +182,7 @@ anytime query_posts is used, it overrides $wp_query global hence it is not advic
 			'normal', // context
 			'high' // priority
 		);
+		
 	}
 
 	function player_info($post) {
@@ -248,14 +280,26 @@ anytime query_posts is used, it overrides $wp_query global hence it is not advic
 	add_filter( 'template_include', 'contact_page_tpl', 99 );
 
 	function contact_page_tpl( $priority ) {
-
-	if ( is_page( 'Contact Us' )  ) {
-		$new_priority = locate_template( array( 'tpl_contact-us.php' ) );
-		if ( '' != $new_priority ) {
-			return $new_priority ;
+		if ( is_page( 'Contact Us' )  ) {
+			$new_priority = locate_template( array( 'tpl_contact-us.php' ) );
+			if ( '' != $new_priority ) {
+				return $new_priority ;
+			}
 		}
+
+		return $priority;
 	}
 
-	return $priority;
-}
+	add_filter( 'template_include', 'our_work_page_tpl', 99 );
+	
+	function our_work_page_tpl( $priority ) {
+		if ( is_page( 'Our Work' )  ) {
+			$new_priority = locate_template( array( 'tpl_our-work.php' ) );
+			if ( '' != $new_priority ) {
+				return $new_priority ;
+			}
+		}					
+
+		return $priority;
+	}
 ?>
