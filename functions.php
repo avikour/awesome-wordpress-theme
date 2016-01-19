@@ -215,9 +215,9 @@ anytime query_posts is used, it overrides $wp_query global hence it is not advic
 			<label for="player_type">
 				<?php _e('Player Type','awesome'); ?>
 			</label>
-			<input type="radio" name="player_type" value="batsman" <?php checked( get_post_meta( $post->ID, 'player_type', true) == "batsman"); ?> > <?php _e('Batsman','awesome'); ?><br>
-  			<input type="radio" name="player_type" value="bowler" <?php checked( get_post_meta( $post->ID, 'player_type', true) == "bowler"); ?> > <?php _e('Bowler','awesome'); ?><br>
-  			<input type="radio" name="player_type" value="all_rounder" <?php checked( get_post_meta( $post->ID, 'player_type', true) == "all_rounder"); ?> > <?php _e('All-Rounder','awesome'); ?><br>
+			<input type="radio" name="player_type" value="Batsman" <?php checked( get_post_meta( $post->ID, 'player_type', true) == "Batsman"); ?> > <?php _e('Batsman','awesome'); ?><br>
+  			<input type="radio" name="player_type" value="bowler" <?php checked( get_post_meta( $post->ID, 'player_type', true) == "Bowler"); ?> > <?php _e('Bowler','Bowler'); ?><br>
+  			<input type="radio" name="player_type" value="All-Rounder" <?php checked( get_post_meta( $post->ID, 'player_type', true) == "All-Rounder"); ?> > <?php _e('All-Rounder','awesome'); ?><br>
 		</p> <?php 
 	}
 
@@ -302,4 +302,95 @@ anytime query_posts is used, it overrides $wp_query global hence it is not advic
 
 		return $priority;
 	}
+
+	add_action('admin_init', 'player_type_update');
+
+	function player_type_update(){
+
+		// The Query
+		$args = array ( 'posts_per_page' => -1 );
+		$the_query = new WP_Query( $args );
+
+		// The Loop
+		while ( $the_query->have_posts() ) :
+			$the_query->the_post();
+
+			$value = 'player_type';
+			$get_value = get_post_meta( get_the_ID(), $value, true);
+			$new_value = str_replace('all_rounder', 'All-Rounder', $get_value);
+			update_post_meta(get_the_ID(), $value, $new_value);
+
+		endwhile;
+
+	}
+	
+	function more_settings_page(){
+		?>
+	    <div class="wrap">
+	    <h1>More Settings</h1>
+	    <form method="post" action="options.php">
+	        <?php
+	            settings_fields("section");
+	            do_settings_sections("more-options");      
+	            submit_button(); 
+	        ?>          
+	    </form>
+		</div>
+	<?php
+	}
+
+	function awesome_add_theme_menu()
+	{
+		
+		add_menu_page("More Settings", // page title
+					  "More Settings", // menu name
+					  "manage_options", // capability
+					  "more-settings", // menu slug
+					  "more_settings_page", // callback function
+					  null, // icon url
+					  99); // position / priority
+	}
+
+	add_action("admin_menu", "awesome_add_theme_menu");
+
+	function display_twitter_element()
+	{
+		?>
+			<input type="text" name="twitter_url" id="twitter_url" 
+				   value="<?php echo get_option('twitter_url'); ?>" />
+		<?php
+	}
+
+	function display_facebook_element()
+	{
+		?>
+			<input type="text" name="facebook_url" id="facebook_url" 
+				   value="<?php echo get_option('facebook_url'); ?>" />
+		<?php
+	}
+	
+	function display_more_settings_fields()
+	{
+		add_settings_section("section", // section ID
+							 "Social Settings", // section name
+							  null, // callback function
+							 "more-options"); // The menu page on which to display this section.
+
+		add_settings_field("twitter_url",
+						   "Twitter Profile Url",
+						   "display_twitter_element",
+						   "more-options", // The menu page on which to display this section.
+						   "section");  // section ID
+		
+		add_settings_field("facebook_url", "Facebook Profile Url", "display_facebook_element", "more-options", "section");
+
+		register_setting("section",   // section ID
+						 "twitter_url");
+		
+		register_setting("section", "facebook_url");
+	}
+
+	add_action("admin_init", "display_more_settings_fields");
+
+		
 ?>
