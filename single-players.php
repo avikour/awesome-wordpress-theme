@@ -24,7 +24,7 @@
 								the_post_thumbnail('thumbnail');
 								the_title( '<h1>', '</h1>' );
 								the_content(); ?>
-					<?php get_post_meta($post->ID, 'player_age', true) ?>
+					
 						
 						<tr> 
 							<td> <?php the_title(); ?> </td>

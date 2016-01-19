@@ -14,7 +14,7 @@
 								the_title( '<h1>', '</h1>' );
 								the_content();
 								//
-								<?php echo get_post_meta( $post->ID, 'total_runs', true); ?>
+								echo get_post_meta( $post->ID, 'total_runs', true);
 								//
 							} // end while
 						} // end if
