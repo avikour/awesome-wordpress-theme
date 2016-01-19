@@ -308,7 +308,8 @@ anytime query_posts is used, it overrides $wp_query global hence it is not advic
 	function player_type_update(){
 
 		// The Query
-		$args = array ( 'posts_per_page' => -1 );
+		$args = array ( 'post_type' => 'players',
+					   'posts_per_page' => -1 );
 		$the_query = new WP_Query( $args );
 
 		// The Loop
@@ -317,7 +318,7 @@ anytime query_posts is used, it overrides $wp_query global hence it is not advic
 
 			$value = 'player_type';
 			$get_value = get_post_meta( get_the_ID(), $value, true);
-			$new_value = str_replace('all_rounder', 'All-Rounder', $get_value);
+			$new_value = str_replace('bowler', 'Bowler', $get_value);
 			update_post_meta(get_the_ID(), $value, $new_value);
 
 		endwhile;
