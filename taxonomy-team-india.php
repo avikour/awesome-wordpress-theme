@@ -3,30 +3,36 @@
 	<div id="ww">
 	    <div class="container">
             <?php
+				echo '
+							<div class="row">
+								<div class="col-lg-8 col-lg-offset-2 centered">
+						';
+				$team_names = get_the_terms($post->ID, 'team');
+				foreach ( $team_names as $team_name ) {
+					echo '<h1>'.$team_name->name.'</h1>';
+				}
 			
 				if ( have_posts() ) {
 					while ( have_posts() ) {
 						the_post(); 
-						echo '
-							<div class="row">
-								<div class="col-lg-8 col-lg-offset-2 centered">
-						';
+						
 						the_post_thumbnail('thumbnail');
 						echo '
-						<h1>
+						<h2>
 							<a href="'.get_permalink().'">
 								'.get_the_title().'
 							</a>
-						</h1>';
+						</h2>';
 						the_excerpt();
-						echo '
-	
-								</div>
-							</div>
-						';
+						
 					} // end while
 				} // end if
-			?>
+				echo '
+
+									</div>
+								</div>
+							';
+				?>
 	</div> <!-- /container -->
 </div><!-- /ww -->
 
