@@ -41,6 +41,10 @@ anytime query_posts is used, it overrides $wp_query global hence it is not advic
         
     }
 
+
+// ====================================== REGISTERING THEME MENU - SIDEBAR ====================================== //
+
+
 	add_action( 'after_setup_theme', 'register_theme_menu' );
 
 	function register_theme_menu() {
@@ -108,6 +112,11 @@ anytime query_posts is used, it overrides $wp_query global hence it is not advic
         return $query;
     }
     //add_filter('pre_get_posts','alter_home_page_posts');
+
+
+
+// ====================================== CPT - TAXONOMY ====================================== //
+
     
 	add_action( 'init', 'create_post_type');
 
@@ -149,7 +158,8 @@ anytime query_posts is used, it overrides $wp_query global hence it is not advic
 			  ),
 			  'public' => true,
 			  'has_archive' => true,
-			  'supports' => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'custom-fields', 'comments' )
+			  'supports' =>
+				array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'custom-fields', 'comments' )
 			)
 		);
 		
@@ -167,9 +177,10 @@ anytime query_posts is used, it overrides $wp_query global hence it is not advic
 			)
 		 );
 		
-		
-		
    }
+
+// ====================================== METABOX ====================================== //
+
 
 	add_action('add_meta_boxes', 'awesome_add_meta_boxes');
 	
@@ -279,6 +290,10 @@ anytime query_posts is used, it overrides $wp_query global hence it is not advic
 
 	add_filter( 'template_include', 'contact_page_tpl', 99 );
 
+
+// ====================================== CUSTOM TEMPLATE ====================================== //
+
+
 	function contact_page_tpl( $priority ) {
 		if ( is_page( 'Contact Us' )  ) {
 			$new_priority = locate_template( array( 'tpl_contact-us.php' ) );
@@ -303,9 +318,10 @@ anytime query_posts is used, it overrides $wp_query global hence it is not advic
 		return $priority;
 	}
 
-	add_action('admin_init', 'player_type_update');
+	//add_action('admin_init', 'player_type_update');
 
-	function player_type_update(){
+	//function only to use when required
+		function player_type_update(){
 
 		// The Query
 		$args = array ( 'post_type' => 'players',
@@ -323,17 +339,23 @@ anytime query_posts is used, it overrides $wp_query global hence it is not advic
 
 		endwhile;
 
-	}
+	} 
 	
+// ====================================== SETTINGS PAGE ====================================== //
+
+
 	function more_settings_page(){
 		?>
 	    <div class="wrap">
-	    <h1>More Settings</h1>
+	    <h1>More Theme Settings</h1>
 	    <form method="post" action="options.php">
 	        <?php
-	            settings_fields("section");
-	            do_settings_sections("more-options");      
-	            submit_button(); 
+				// Output nonce, action, and option_page fields for settings page
+	            settings_fields("section"); // The section ID or settings group name
+				// Print out all settings sections added to the settings page. 
+	            do_settings_sections("more-options"); // Slug name of page  
+	            // Echo a submit button
+				submit_button(); // 
 	        ?>          
 	    </form>
 		</div>
@@ -344,7 +366,7 @@ anytime query_posts is used, it overrides $wp_query global hence it is not advic
 	{
 		
 		add_menu_page("More Settings", // page title
-					  "More Settings", // menu name
+					  "More Theme Settings", // menu name
 					  "manage_options", // capability
 					  "more-settings", // menu slug
 					  "more_settings_page", // callback function
@@ -369,26 +391,71 @@ anytime query_posts is used, it overrides $wp_query global hence it is not advic
 				   value="<?php echo get_option('facebook_url'); ?>" />
 		<?php
 	}
-	
+
+	function display_layout_option()
+	{
+		?>
+			<input type="checkbox" name="layout_option" 
+				   value="1" <?php checked(1, get_option('layout_option'), true); ?> /> 
+		<?php
+	}
+
+	function display_logo()
+	{
+		?>
+			<input type="file" name="logo" /> 
+			<?php echo get_option('logo'); ?>
+	   <?php
+	}
+
+	function handle_logo_upload()
+	{
+		if(!empty($_FILES["demo-file"]["tmp_name"]))
+		{
+			$urls = wp_handle_upload($_FILES["logo"], // file
+									 array('test_form' => FALSE) // overrides
+									);
+			$temp = $urls["url"];
+			return $temp;   
+		}
+
+		return $option;
+	}
+
 	function display_more_settings_fields()
 	{
-		add_settings_section("section", // section ID
-							 "Social Settings", // section name
+		// Display the section heading and description
+		add_settings_section("section", // section ID or option group
+							 "Additional Settings", // section name
 							  null, // callback function
 							 "more-options"); // The menu page on which to display this section.
 
-		add_settings_field("twitter_url",
-						   "Twitter Profile Url",
-						   "display_twitter_element",
+		
+		// Display the HTML code of the fields
+		add_settings_field("twitter_url", //option name in Database
+						   "Twitter Profile Url", // Title of field
+						   "display_twitter_element", //a callback function
 						   "more-options", // The menu page on which to display this section.
 						   "section");  // section ID
 		
 		add_settings_field("facebook_url", "Facebook Profile Url", "display_facebook_element", "more-options", "section");
 
-		register_setting("section",   // section ID
-						 "twitter_url");
+		add_settings_field("layout_option", "Do you want the layout to be responsive?", "display_layout_option", "more-options", "section");
+		
+		add_settings_field("logo", "Logo", "display_logo", "more-options", "section");  
+
+    
+		// Automate saving the values of the fields
+		register_setting("section",   // option group
+						 "twitter_url"); // option name
 		
 		register_setting("section", "facebook_url");
+		
+		register_setting("section", "layout_option");
+		
+		register_setting("section", "logo", "handle_logo_upload" /** call back function **/ );
+
+		
 	}
 
 	add_action("admin_init", "display_more_settings_fields");
