@@ -1,4 +1,4 @@
-<?php
+<?php 
     
     /**
     
@@ -14,6 +14,11 @@ anytime query_posts is used, it overrides $wp_query global hence it is not advic
 
 
 **/ 
+
+
+	//include file
+	include_once("shortcode.php");
+	include_once("my-widget.php");
 
 
     // Register style sheet.
@@ -325,7 +330,8 @@ anytime query_posts is used, it overrides $wp_query global hence it is not advic
 
 		// The Query
 		$args = array ( 'post_type' => 'players',
-					   'posts_per_page' => -1 );
+					   'posts_per_page' => -1 // -1 means all 
+					  );
 		$the_query = new WP_Query( $args );
 
 		// The Loop
@@ -460,5 +466,4 @@ anytime query_posts is used, it overrides $wp_query global hence it is not advic
 
 	add_action("admin_init", "display_more_settings_fields");
 
-		
 ?>

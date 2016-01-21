@@ -12,6 +12,8 @@
 				foreach ( $team_names as $team_name ) {
 					echo '<h1>'.$team_name->name.'</h1>';
 				}
+					
+				//echo do_shortcode('[say_hi name="Prince"]');
 			
 				if ( have_posts() ) {
 					while ( have_posts() ) {
