@@ -56,6 +56,8 @@ anytime query_posts is used, it overrides $wp_query global hence it is not advic
 		
 	  add_theme_support( 'post-thumbnails' ); 	
 		
+	  add_image_size('featured_preview', 20, 20, true);
+		
 	  register_nav_menu( 'main-menu', __( 'Awesome Primary Menu', 'awesome' ) );
 		
  	  register_sidebar( array(
@@ -323,29 +325,6 @@ anytime query_posts is used, it overrides $wp_query global hence it is not advic
 		return $priority;
 	}
 
-	//add_action('admin_init', 'player_type_update');
-
-	//function only to use when required
-		function player_type_update(){
-
-		// The Query
-		$args = array ( 'post_type' => 'players',
-					   'posts_per_page' => -1 // -1 means all 
-					  );
-		$the_query = new WP_Query( $args );
-
-		// The Loop
-		while ( $the_query->have_posts() ) :
-			$the_query->the_post();
-
-			$value = 'player_type';
-			$get_value = get_post_meta( get_the_ID(), $value, true);
-			$new_value = str_replace('bowler', 'Bowler', $get_value);
-			update_post_meta(get_the_ID(), $value, $new_value);
-
-		endwhile;
-
-	} 
 	
 // ====================================== SETTINGS PAGE ====================================== //
 
@@ -465,5 +444,106 @@ anytime query_posts is used, it overrides $wp_query global hence it is not advic
 	}
 
 	add_action("admin_init", "display_more_settings_fields");
+
+
+// ====================================== ADMIN CUSTOMIZATIONS ====================================== //
+
+	
+	// Update meta values
+		function player_type_update(){
+
+		// The Query
+		$args = array ( 'post_type' => 'players',
+					   'posts_per_page' => -1 // -1 means all 
+					  );
+		$the_query = new WP_Query( $args );
+
+		// The Loop
+		while ( $the_query->have_posts() ) :
+			$the_query->the_post();
+
+			$value = 'player_type';
+			$get_value = get_post_meta( get_the_ID(), $value, true);
+			$new_value = str_replace('bowler', 'Bowler', $get_value);
+			update_post_meta(get_the_ID(), $value, $new_value);
+
+		endwhile;
+	} 
+	//add_action('admin_init', 'player_type_update');
+
+
+	// ADD NEW COLUMN IN POSTS AND PAGES FOR FEATURED IMAGE
+	function awesome_new_column($default) {
+		
+		var_dump($default); die();
+		
+		$default['featured_image'] = 'Featured Image';
+		
+		return $default;
+	}
+	add_filter('manage_posts_columns', 'awesome_new_column');
+	add_filter('manage_page_posts_columns', 'awesome_new_column', 10);
+
+	// GET FEATURED IMAGE
+	function awesome_get_featured_image($post_ID) {
+		
+		$post_thumbnail_id = get_post_thumbnail_id($post_ID);
+		if ($post_thumbnail_id) {
+			$post_thumbnail_image = wp_get_attachment_image_src($post_thumbnail_id, 'thumbnail');
+			return $post_thumbnail_image[0];
+		}
+	}
+
+	// SHOW THE FEATURED IMAGE
+	function new_column_content($column_name, $post_ID) {
+		
+		if ($column_name == 'featured_image') {
+			$post_featured_image = awesome_get_featured_image($post_ID);
+			if ($post_featured_image) {
+				echo '<img src="' . $post_featured_image . '" />';
+			}
+		}
+	}
+	add_action('manage_posts_custom_columns', 'new_column_content', 10, 2);
+	add_action('manage_page_posts_custom_columns', 'new_column_content', 10, 2);
+
+
+	// ADD NEW COLUMNS IN PLAYERS POST TYPE
+	function awesome_new_column_players($default) {
+		$default['total_runs'] = 'Total Runs';
+		$default['age'] = 'Age';
+
+		return $default;
+	}
+	add_filter('manage_players_posts_columns', 'awesome_new_column_players', 10);
+
+	
+	// SHOW NEW CONTENT IN PLAYERS
+	function new_column_content_players($column_name, $post_ID) {
+		
+		if ($column_name == 'total_runs') {
+			$player_total_runs = get_post_meta($post_ID, 'total_runs', true);
+			if ($player_total_runs) {
+				echo $player_total_runs;
+			}
+		}
+		if ($column_name == 'age') {
+			$player_age = get_post_meta($post_ID, 'player_age', true);
+			if ($player_total_runs) {
+				echo $player_total_runs;
+			}
+		}
+	}
+	add_action('manage_players_posts_custom_columns', 'new_column_content_players', 10, 2);
+
+
+	// REMOVE COLUMNS
+	function remove_columns($default) {
+		
+		unset( $default['author'], $default['comments']);
+		
+		return $default;
+	}
+	add_filter('manage_players_posts_columns', 'remove_columns');
 
 ?>
