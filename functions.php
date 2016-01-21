@@ -475,8 +475,6 @@ anytime query_posts is used, it overrides $wp_query global hence it is not advic
 	// ADD NEW COLUMN IN POSTS AND PAGES FOR FEATURED IMAGE
 	function awesome_new_column($default) {
 		
-		var_dump($default); die();
-		
 		$default['featured_image'] = 'Featured Image';
 		
 		return $default;
@@ -504,8 +502,8 @@ anytime query_posts is used, it overrides $wp_query global hence it is not advic
 			}
 		}
 	}
-	add_action('manage_posts_custom_columns', 'new_column_content', 10, 2);
-	add_action('manage_page_posts_custom_columns', 'new_column_content', 10, 2);
+	add_action('manage_posts_custom_column', 'new_column_content', 10, 2);
+	add_action('manage_page_posts_custom_column', 'new_column_content', 10, 2);
 
 
 	// ADD NEW COLUMNS IN PLAYERS POST TYPE
@@ -522,6 +520,7 @@ anytime query_posts is used, it overrides $wp_query global hence it is not advic
 	function new_column_content_players($column_name, $post_ID) {
 		
 		if ($column_name == 'total_runs') {
+			
 			$player_total_runs = get_post_meta($post_ID, 'total_runs', true);
 			if ($player_total_runs) {
 				echo $player_total_runs;
@@ -529,12 +528,12 @@ anytime query_posts is used, it overrides $wp_query global hence it is not advic
 		}
 		if ($column_name == 'age') {
 			$player_age = get_post_meta($post_ID, 'player_age', true);
-			if ($player_total_runs) {
-				echo $player_total_runs;
+			if ($player_age) {
+				echo $player_age;
 			}
 		}
 	}
-	add_action('manage_players_posts_custom_columns', 'new_column_content_players', 10, 2);
+	add_action('manage_players_posts_custom_column', 'new_column_content_players', 10, 2);
 
 
 	// REMOVE COLUMNS
